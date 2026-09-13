@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Archive, Boxes, LayoutDashboard, PanelsTopLeft } from "lucide-react";
-import type { ReactNode } from "react";
+import { Archive, Boxes, LayoutDashboard, LogOut, PanelsTopLeft } from "lucide-react";
+import { useState, type ReactNode } from "react";
+
+import { supabase } from "@/integrations/supabase/client";
 
 const NAV = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -10,6 +12,14 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const [leaving, setLeaving] = useState(false);
+
+  async function signOut() {
+    setLeaving(true);
+    await supabase.auth.signOut();
+    window.location.href = "/auth";
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
@@ -35,7 +45,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto" />
+          <button
+            type="button"
+            onClick={signOut}
+            disabled={leaving}
+            className="ml-auto inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-wait disabled:opacity-60"
+          >
+            <LogOut className="size-4" aria-hidden="true" />
+            <span className="hidden md:inline">{leaving ? "Saindo…" : "Sair"}</span>
+          </button>
         </div>
 
         <nav
