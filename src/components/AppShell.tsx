@@ -1,10 +1,6 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
-import { Archive, Boxes, LayoutDashboard, LogOut, PanelsTopLeft } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
-
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
+import { Archive, Boxes, LayoutDashboard, PanelsTopLeft } from "lucide-react";
+import type { ReactNode } from "react";
 
 const NAV = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -14,27 +10,6 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [email, setEmail] = useState<string>("");
-
-  useEffect(() => {
-    let active = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (active) setEmail(data.user?.email ?? "");
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  async function handleSignOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/85 backdrop-blur">
@@ -60,15 +35,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
-            <span className="hidden max-w-[16rem] truncate text-sm text-muted-foreground md:inline">
-              {email}
-            </span>
-            <Button variant="outline" size="sm" onClick={handleSignOut}>
-              <LogOut className="size-4" aria-hidden="true" />
-              Sair
-            </Button>
-          </div>
+          <div className="ml-auto" />
         </div>
 
         <nav
